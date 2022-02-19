@@ -19,7 +19,7 @@ int[] DirectionX = {0, 1, -1};
 void setup(){
   size(1536, 820);  // window size
   
-  backgr  = loadImage("a.png");
+  //backgr  = loadImage("a.png");
   
   img  = loadImage("car.png");
   imgW = img.width;
@@ -58,8 +58,8 @@ void draw(){
   
    //System.out.println(direction);
    
-   //background(50);
-   image(backgr, 0, 0, 1536, 820);
+   background(50);
+   //image(backgr, 0, 0, 1536, 820);
    
    if(direction == 1){  // if car is going to the right
      posX = 3;
