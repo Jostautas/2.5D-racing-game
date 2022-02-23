@@ -1,25 +1,30 @@
 int sizeOfMap;  // how many rows there are in a map
-int[][] map1 = {{0, 1, 0},
-                {1, 0, 0},
-                {0, 0, 1},
-                {0, 0, 0},
+int[][] map1 = {{1, 0, 1},
+                {1, 0, 1},
+                {0, 1, 0},
+                {0, 1, 0},
                 {1, 0, 0},
                 {0, 1, 0},
                 {0, 0, 0},
                 {1, 0, 0},
                 {1, 0, 1},
-                {1, 0, 0}};
+                {1, 1, 1}};
 int startX;  // x coordinate where map starts to be drawn
 int startY;
 int block;  // rectangular block that represents obstacle
 
 PFont f;
 
+boolean mapPressed;  // is key 1, 2 or 3 (map menus) pressed
+
 PImage backgr1;
 PImage backgr2;
 int counter;
 
 int score;
+
+int mapProgress;
+int[] Progress;
 
 PImage carMap;
 PImage car;
@@ -52,6 +57,7 @@ void setup(){
   imgW = carMap.width;
   imgH = carMap.height;
   
+  mapPressed = false;
   
   
   //sets collumn and row widths. car.png has 6 collumns and 4 rows
@@ -75,7 +81,13 @@ void setup(){
   
   speed = 15;
   
+  ob = loadImage("ob.png");
+  
+  mapProgress = 0;
+  
   counter = 0; // background animation counter
+  
+  int[] Progress = new int[sizeOfMap];
   
   frameRate(30);
   
@@ -138,16 +150,24 @@ void draw(){
   
   //    image, mouseX, mouseY, sizeX, sizeY
   image(car, carPosX * speed + distanceFromLeft, carPosY, 96*2, 64*2);
+  
+  drawObs(sizeOfMap, map1, mapProgress);
+  
+  mapProgress++;
 }
 
 void keyPressed(){
   //direction = keyCode == RIGHT? 1 : (keyCode == LEFT? 2 : 0);
-  if(key == 1 || key == 1){
+  /*
+  if(key == 1){
+    mapPressed = true;
     generateMap(map1);
+    System.out.print("a");
   }
+  */
   direction = keyCode == RIGHT? 1 : (keyCode == LEFT? 2 : 0);
   if(direction == 0){
-    speed += 5;
+    //speed += 5;
   }
 }
 
@@ -165,5 +185,30 @@ void generateMap(int[][] map){
          square(startX + j * block, startY + i * block, block);
       }  
     }
+  }
+}
+
+void drawObs(int sizeOfMap, int[][] map, int mapProgress){
+  int currentMapProgress;
+
+   for(int i = 0; i < sizeOfMap; i++){
+    System.out.println(mapProgress);
+    currentMapProgress = mapProgress - mapProgress/(i*10+1);
+    System.out.println(currentMapProgress);
+    System.out.println();
+    for(int j = 0; j < 3; j++){
+      if(map[i][j] == 1){
+        if(j == 0){  // shifts to left
+          image(ob, 720-currentMapProgress, mapProgress*20+(i)*300-3000, 96, 64);
+        }
+        else if(j == 2){  // shifts to right
+          image(ob, 720+currentMapProgress, mapProgress*20+(i)*300-3000, 96, 64);
+        }
+        else{  // stays at the center
+          image(ob, 720, mapProgress*20+(i)*300-3000, 96, 64);
+        }
+      }
+    }
+    Progress[i]++;
   }
 }
