@@ -1,16 +1,10 @@
 int sizeOfMap;  // how many rows there are in a map
-int[][] map1 = {{0, 1, 0}, // one map consists of 10 layers
-  {1, 0, 0},
-  {0, 1, 0},
-  {0, 1, 1},
-  {1, 0, 0},
-  {0, 1, 0},
-  {0, 0, 1},
-  {1, 0, 0},
-  {0, 0, 1},
-  {1, 0, 0}};  // array will be drawn from bottom to top
-Table map12;
-  
+int[][] map1; // one map consists of 10 layers. array will be drawn from bottom to top
+int[][] map2;
+int[][] map3;
+int currentMap = 0;
+Table mapTable;
+String[] header = {"a", "b", "c"};
 int[][] gap = {{0, 0, 0},
   {0, 0, 0},
   {0, 0, 0}};
@@ -18,6 +12,7 @@ int layer;
 int startX;  // x coordinate where map starts to be drawn
 int startY;
 int block;  // rectangular block that represents obstacle
+Boolean newMap = false; // if a new map has been reached, some values will have to be reset
 
 PFont f;
 
@@ -58,17 +53,29 @@ void setup() {
   startX = 1536 - block*3;
   startY = 50;
   
-  map12 = loadTable("map1.csv", "header");
-  println(map12.getRowCount());
+        //10 rows * 3 maps + 2 bloks of 3*3 whitespace between maps
+  map1 = new int[10][3];
+  map2 = new int[10][3];
+  map3 = new int[10][3];
   
-  /*
-  TableRow mapRow;
-  for(int i = 0; i < 10; i++){
-    for(int j = 0; j < 3; j++){
-      mapRow = i;
-      map1[i][j] = mapRow.getInt("1");
-    }
-  }*/
+  mapTable = loadTable("map1.csv", "header");
+  int i = 0;
+    for(TableRow row : mapTable.rows()){
+      for(int j = 0; j < 3; j++){
+        map1[i][j] = row.getInt(header[j]);
+      }
+      i++;
+  }
+  i = 0;
+  mapTable = loadTable("map2.csv", "header");
+    for(TableRow row : mapTable.rows()){
+      println(row.getInt("b"));
+      for(int j = 0; j < 3; j++){
+        map2[i][j] = row.getInt(header[j]);
+      }
+      i++;
+  }
+  
 
   f = createFont("Arial", 16, true);
 
@@ -111,16 +118,10 @@ void setup() {
 
   counter = 0; // background animation counter
 
-  frameRate(30);
+  frameRate(200); //30
 }
 
 void draw() {
-  //     (.., ats nuo krasto, atst nuo virsaus, rez, rez);
-  //image(img, 50, 30, 305, 305);
-
-  //System.out.println(direction);
-
-  //background(50);
   if (counter == 1) {
     image(backgr1, 0, 0, 1536, 820);
     counter = 0;
@@ -129,10 +130,7 @@ void draw() {
     ++counter;
   }
 
-
   //generateMap(map1);
-
-
 
   if (direction == 1) {  // if car is going to the right
     posX = 3;
@@ -156,10 +154,22 @@ void draw() {
   //    image, X, Y, sizeX, sizeY
   image(car, XOnScreen, carPosY, 96*2, 64*2);
 
-  drawObs(sizeOfMap, map1, mapProgress, XOnScreen, carPosY);
+  //println(currentMap);
+  if(currentMap == 0){
+    //println("a");
+    drawObs(sizeOfMap, map1, mapProgress, XOnScreen, carPosY, currentMap);
+    mapProgress++;
+    realObsY += 20;
+  }
+  
+  if(currentMap == 1){
+    print("bbbbb");
+    drawObs(sizeOfMap, map2, mapProgress, XOnScreen, carPosY, currentMap);
+    mapProgress++;
+    realObsY += 20;
+  }
 
-  mapProgress++;
-  realObsY += 20;
+  
 }
 
 void keyPressed() {
@@ -193,7 +203,7 @@ void generateMap(int[][] map) {
   }
 }
 
-void drawObs(int sizeOfMap, int[][] map, int mapProgress, int carX, int carY) {
+void drawObs(int sizeOfMap, int[][] map, int mapProgress, int carX, int carY, int currentMap) {
   realObsX = 0;
   for (int i = 0; i < sizeOfMap; i++) {
     for (int j = 0; j < 3; j++) {
@@ -213,19 +223,26 @@ void drawObs(int sizeOfMap, int[][] map, int mapProgress, int carX, int carY) {
 
         if (realObsY > 700) {
           layer++;
-          realObsY -= 300;
+          realObsY -= 300; //<>//
           if (j == 2) {
             realObsX += 50;
           } else if (j == 0) {
             realObsX -= 50;
           }
         }
+        
+        //println(layer);
 
-        if (layer == 10) {
-          end();
-        } else if (map[9-layer][j] == 1) {
+        if (layer >= 10) {
+          layer = 0;
+          mapProgress = 0;
+          realObsY = -300;
+          currentMap++;
+          nextMap();
+        }
+        else if (map[9-layer][j] == 1) {
           //image(ob2, realObsX, realObsY, 96, 64);
-          if ((carX >= realObsX-120 && carX <= realObsX+30) && (realObsY > 600 && realObsY < 1000)) {
+          if ((carX >= realObsX-120 && carX <= realObsX+30) && (realObsY > 610 && realObsY < 1000)) {
             gameOver();
           }
         }
@@ -249,4 +266,13 @@ void end() {
   noLoop();
 
   //exit();
+}
+void nextMap(){
+  textFont(f, 100);
+  fill(255);
+  text("MAP COMPLETE", 720, 100);
+  text("NEXT MAP:", 720, 200);
+  
+  //delay(2000);
+
 }
