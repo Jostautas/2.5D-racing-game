@@ -1,4 +1,4 @@
-int sizeOfMap;  // how many rows there are in a map
+int sizeOfMap;  // how many rows there are in a map //<>//
 int[][] map1; // one map consists of 10 layers. array will be drawn from bottom to top
 int[][] map2;
 int[][] map3;
@@ -53,37 +53,37 @@ void setup() {
   block = 40;
   startX = 1536 - block*3;
   startY = 50;
-  
-        //10 rows * 3 maps + 2 bloks of 3*3 whitespace between maps
+
+  //10 rows * 3 maps + 2 bloks of 3*3 whitespace between maps
   map1 = new int[10][3];
   map2 = new int[10][3];
   map3 = new int[10][3];
-  
+
   mapTable = loadTable("map1.csv", "header");
   int i = 0;
-    for(TableRow row : mapTable.rows()){
-      for(int j = 0; j < 3; j++){
-        map1[i][j] = row.getInt(header[j]);
-      }
-      i++;
+  for (TableRow row : mapTable.rows()) {
+    for (int j = 0; j < 3; j++) {
+      map1[i][j] = row.getInt(header[j]);
+    }
+    i++;
   }
   i = 0;
   mapTable = loadTable("map2.csv", "header");
-    for(TableRow row : mapTable.rows()){
-      for(int j = 0; j < 3; j++){
-        map2[i][j] = row.getInt(header[j]);
-      }
-      i++;
+  for (TableRow row : mapTable.rows()) {
+    for (int j = 0; j < 3; j++) {
+      map2[i][j] = row.getInt(header[j]);
+    }
+    i++;
   }
   i = 0;
   mapTable = loadTable("map3.csv", "header");
-    for(TableRow row : mapTable.rows()){
-      for(int j = 0; j < 3; j++){
-        map3[i][j] = row.getInt(header[j]);
-      }
-      i++;
+  for (TableRow row : mapTable.rows()) {
+    for (int j = 0; j < 3; j++) {
+      map3[i][j] = row.getInt(header[j]);
+    }
+    i++;
   }
-  
+
 
   f = createFont("Arial", 16, true);
 
@@ -159,41 +159,38 @@ void draw() {
   XOnScreen = carPosX * speed + distanceFromLeft;
   //    image, X, Y, sizeX, sizeY
   image(car, XOnScreen, carPosY, 96*2, 64*2);
-  
-  if(pause){
+
+  if (pause) {
     nextMapLoop();
-  }
-  else{
+  } else {
     mapManager();
   }
-  
 }
 
-void mapManager(){
-  if(currentMap == 0){
+void mapManager() {
+  if (currentMap == 0) {
     drawObs(sizeOfMap, map1, XOnScreen, carPosY);
     mapProgress++;
     realObsY += 20;
-    if(mapPressed){
+    if (mapPressed) {
       generateMap(map1);
     }
   }
-  
-  if(currentMap == 1){
+
+  if (currentMap == 1) {
     drawObs(sizeOfMap, map2, XOnScreen, carPosY);
     mapProgress++;
     realObsY += 20;
-    if(mapPressed){
+    if (mapPressed) {
       generateMap(map2);
     }
-
   }
-  
-  if(currentMap == 2){
+
+  if (currentMap == 2) {
     drawObs(sizeOfMap, map3, XOnScreen, carPosY);
     mapProgress++;
     realObsY += 20;
-    if(mapPressed){
+    if (mapPressed) {
       generateMap(map3);
     }
   }
@@ -207,35 +204,36 @@ void keyPressed() {
   direction = keyCode == RIGHT? 1 : (keyCode == LEFT? 2 : 0);
 }
 
-void mousePressed(){
-  println("Mouse: " + mouseX + " " + mouseY);
-  if(pause){
+void mousePressed() {
+  if (pause) {
     pause = false;
   }
-  if(mapPressed){
-    println("StartX: " + startX);
-    if(currentMap == 0){
-      for (int i = 0; i < sizeOfMap; i++) {
-        for (int j = 0; j < 3; j++) {
-          if (map1[i][j] == 1) {
-            int x = startX + j * block;
-            int y = startY + i * block;
-            fill(255);
-            square(x, y, block);
-            println("block start: " + x + " " + y);
-            //square(startX + j * block, startY + i * block, block);
-            if((mouseX >= x) && (mouseX <=  x+block) && (mouseY >= y) && (mouseY <= y+block)){
-              println("block: " + i + " " + j);
-              map1[i][j] = 0;
-            }
-          }
+  if (mapPressed) {
+    if (currentMap == 0) {
+      editingMap(map1);
+    }
+    else if(currentMap == 1){
+      editingMap(map2);
+    }
+    else{
+      editingMap(map3);
+    }
+  }
+}
+
+void editingMap(int[][] map) {
+  for (int i = 0; i < sizeOfMap; i++) {
+    for (int j = 0; j < 3; j++) {
+      int x = startX + j * block;
+      int y = startY + i * block;
+      if ((mouseX >= x) && (mouseX <=  x+block) && (mouseY >= y) && (mouseY <= y+block)) {
+        if (map[i][j] == 1) {
+          map[i][j] = 0;
+        } else {
+          map[i][j] = 1;
         }
       }
-      
     }
-  
-    
-    
   }
 }
 
@@ -276,7 +274,7 @@ void drawObs(int sizeOfMap, int[][] map, int carX, int carY) {
 
         if (realObsY > 700) {
           layer++;
-          realObsY -= 300; //<>//
+          realObsY -= 300;
           if (j == 2) {
             realObsX += 50;
           } else if (j == 0) {
@@ -289,14 +287,12 @@ void drawObs(int sizeOfMap, int[][] map, int carX, int carY) {
           mapProgress = 0;
           realObsY = -300;
           currentMap++;
-          if(currentMap == 3){
+          if (currentMap == 3) {
             end();
-          }
-          else{
+          } else {
             nextMap();
           }
-        }
-        else if (map[9-layer][j] == 1) {
+        } else if (map[9-layer][j] == 1) {
           //image(ob2, realObsX, realObsY, 96, 64);
           if ((carX >= realObsX-120 && carX <= realObsX+30) && (realObsY > 610 && realObsY < 1000)) {
             gameOver();
@@ -320,24 +316,24 @@ void end() {
   text("CONGRATULATIONS, YOU WON!", 300, 200);
 
   noLoop();
-  
+
   //exit();
 }
-void nextMap(){
+void nextMap() {
   //textFont(f, 100);
   //fill(255);
   //text("MAP COMPLETE", 720, 100);
   //text("NEXT MAP:", 720, 200);
-  
+
   pause = true;
 }
 
-void nextMapLoop(){
+void nextMapLoop() {
   textFont(f, 90);
   fill(255);
   text("MAP COMPLETE", 700, 100);
   text("NEXT MAP:", 700, 200);
-  
+
   textFont(f, 30);
   text("PRESS MOUSE TO CONTINUE", 600, 300);
 }
