@@ -5,19 +5,16 @@ int[][] map3;
 int currentMap = 0;
 Table mapTable;
 String[] header = {"a", "b", "c"};
-int[][] gap = {{0, 0, 0},
-  {0, 0, 0},
-  {0, 0, 0}};
 int layer;
 int startX;  // x coordinate where map starts to be drawn
 int startY;
-int block;  // rectangular block that represents obstacle
+int block;  // rectangle that represents obstacle
 
 Boolean pause  = false;
 
 PFont f;
 
-boolean mapPressed;  // is key 1, 2 or 3 (map menus) pressed
+boolean mapPressed;  // is 'E' key pressed
 
 PImage backgr1;
 PImage backgr2;
@@ -41,7 +38,6 @@ int direction;
 int[] DirectionX = {0, 1, -1};
 
 PImage ob; // obstacle
-PImage ob2;
 int obsX, obsY;  // used for drawing
 int realObsX, realObsY; // actual position on screen
 
@@ -119,7 +115,6 @@ void setup() {
   speed = 15;
 
   ob = loadImage("ob.png");
-  ob2 = loadImage("ob2.png");
   realObsY = -300;
 
   mapProgress = 0;
@@ -290,7 +285,7 @@ void drawObs(int sizeOfMap, int[][] map, int carX, int carY) {
           if (currentMap == 3) {
             end();
           } else {
-            nextMap();
+            pause = true;
           }
         } else if (map[9-layer][j] == 1) {
           //image(ob2, realObsX, realObsY, 96, 64);
@@ -316,18 +311,7 @@ void end() {
   text("CONGRATULATIONS, YOU WON!", 300, 200);
 
   noLoop();
-
-  //exit();
 }
-void nextMap() {
-  //textFont(f, 100);
-  //fill(255);
-  //text("MAP COMPLETE", 720, 100);
-  //text("NEXT MAP:", 720, 200);
-
-  pause = true;
-}
-
 void nextMapLoop() {
   textFont(f, 90);
   fill(255);
